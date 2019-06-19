@@ -9,18 +9,54 @@
 #define TEXT_COLOUR 4
 #define BLANK 5
 using namespace std;
+void _initColours();
+
+class window
+{
+public:
+  WINDOW *win;
+  int h, w;
+  window()
+  {
+    win = initscr();
+    getmaxyx(win, h, w);
+    cbreak();
+    noecho();
+    start_color();
+    _initColours();
+  }
+  void quit()
+  {
+              erase();
+              mvprintw(h/2, w/2,"Bye!");
+              endwin();
+              getch();
+  }
+};
 
 void movieNameGame()
 {
-  //TODO
+  window mGameScreen;
+  attron(COLOR_PAIR(WINDOW_COLOUR));
+  box(mGameScreen.win, ACS_VLINE, ACS_HLINE );
+  attroff(COLOR_PAIR(WINDOW_COLOUR));
+  mGameScreen.quit();
 }
 void characterNameGame()
 {
-  //TODO
+  window cGameScreen;
+  attron(COLOR_PAIR(WINDOW_COLOUR));
+  box(cGameScreen.win, ACS_VLINE, ACS_HLINE );
+  attroff(COLOR_PAIR(WINDOW_COLOUR));
+  cGameScreen.quit();
 }
 void highScoresDisplay()
 {
-  //TODO
+  window score;
+  attron(COLOR_PAIR(WINDOW_COLOUR));
+  box(score.win, ACS_VLINE, ACS_HLINE );
+  attroff(COLOR_PAIR(WINDOW_COLOUR));
+  score.quit();
 }
 
 //_initColours: To initialise different color combinations of the window
@@ -48,56 +84,46 @@ void _initColours()
 //mainMenu: This function runs the main window of the Program
 void mainMenu()
 {
-  int h, w;
-  WINDOW *mywindow;
-  mywindow = initscr();
-  cbreak();
-  noecho();
-  start_color();
-  _initColours();
+  window mywindow;
   attron(COLOR_PAIR(WINDOW_COLOUR));
-  getmaxyx(mywindow, h, w);
-  box( mywindow, ACS_VLINE, ACS_HLINE );
+  box( mywindow.win, ACS_VLINE, ACS_HLINE );
   attron(COLOR_PAIR(TITLE_COLOUR));
-  mvprintw(h/4+1, w/2-12, "<Welcome to MCU Hangman!>");
+  mvprintw(mywindow.h/4+1, mywindow.w/2-12, "<Welcome to MCU Hangman!>");
   attroff(COLOR_PAIR(TITLE_COLOUR));
 
   //menu
   attron(COLOR_PAIR(SUBTITLE_COLOUR));
-  mvprintw(h/3+2, w/2-10, "Select an Option:");
-  mvprintw(h/2, w/2-10, "1. Start New Game - Movie Names");
-  mvprintw(h/2+1, w/2-10, "2. Start New Game - Character Names");
-  mvprintw(h/2+2, w/2-10, "3. Display High Scores");
-  mvprintw(h/2+3, w/2-10, "4. Exit");
-  mvprintw(h/2+5, w/2-10, "Enter your choice:");
+  mvprintw(mywindow.h/3+2, mywindow.w/2-10, "Select an Option:");
+  mvprintw(mywindow.h/2, mywindow.w/2-10, "1. Start New Game - Movie Names");
+  mvprintw(mywindow.h/2+1, mywindow.w/2-10, "2. Start New Game - Character Names");
+  mvprintw(mywindow.h/2+2, mywindow.w/2-10, "3. Display High Scores");
+  mvprintw(mywindow.h/2+3, mywindow.w/2-10, "4. Exit");
+  mvprintw(mywindow.h/2+5, mywindow.w/2-10, "Enter your choice:");
   ch:
   int choice = getch();
   if(choice>52 || choice<49)
   {
-    mvprintw(h/2+7, w/2,"Enter a valid number! Retry!");
-    move(h/2+5, w/2+13);
+    mvprintw(mywindow.h/2+7, mywindow.w/2,"Enter a valid number! Retry!");
+    move(mywindow.h/2+5, mywindow.w/2+13);
     goto ch;
   }
   else
   {
     attron(COLOR_PAIR(BLANK));
-    mvprintw(h/2+7, w/2,"                            ");
+    mvprintw(mywindow.h/2+7, mywindow.w/2,"                            ");
     attroff(COLOR_PAIR(BLANK));
+    endwin();
+    delwin(mywindow.win);
     switch(choice)
     {
-      case 49:  erase();
-                endwin();
+      case 49:
                 movieNameGame();
                 break;
       case 50:  characterNameGame();
                 break;
       case 51:  highScoresDisplay();
                 break;
-      case 52:  erase();
-                mvprintw(h/2,w/2,"Bye!");
-                endwin();
-                getch();
-                break;
+      case 52:  mywindow.quit();
     }
   }
   attroff(COLOR_PAIR(SUBTITLE_COLOUR));
